@@ -1,0 +1,16 @@
+<div class="sf-chat__user-avatar" ng-if="$ctrl.message.sender.avatarURL.length && $ctrl.block">
+    <img ng-show="{{$ctrl.avatar}}" ng-if="$ctrl.message.sender.avatarURL.length" ng-src="{{$ctrl.message.sender.avatarURL}}" class="md-avatar" />
+</div>
+<div class="sf-chat__message-wrap">
+    <div class="sf-chat__username" ng-if="$ctrl.block">
+        <small>{{$ctrl.message.sender.name}}</small>
+    </div>
+    <div class="sf-chat__message-text">
+        <p>{{$ctrl.message.text}}</p>
+    </div>
+    <div class="sf-chat__attachment" ng-if="$ctrl.message.attachment_embed" ng-click="$ctrl.goToUrl($ctrl.message.attachment_embed.url)">
+        <img class="sf-chat__attachment-image" ng-src="{{$ctrl.message.attachment_embed.image.url}}" alt="{{$ctrl.message.attachment_embed.image.description}}">
+        <div class="sf-chat__attachment-title">{{$ctrl.message.attachment_embed.title}}</div>
+        <div class="sf-chat__attachment-subhead">{{$ctrl.message.attachment_embed.image.size_pretty}}</div>
+    </div>
+</div>

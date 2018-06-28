@@ -1,0 +1,29 @@
+
+<div class="sf-chat-launcher {{$ctrl.position}}" ng-click="$ctrl.toggleWidget()" ng-class="{'active' : $ctrl.widgetActive }">
+	<img class="sf-chat-launcher__close" ng-if="$ctrl.widgetActive" ng-src="{{$ctrl.closeIcon}}" alt="Close" />
+	<img class="sf-chat-launcher__chat" ng-if="!$ctrl.widgetActive" ng-src="{{$ctrl.chatIcon}}" alt="Launch" />
+</div>
+<div class="sf-chat {{$ctrl.position}}" ng-if="$ctrl.widgetActive" ng-class="{'active' : $ctrl.widgetActive }">
+<div class="sf-chat__wrapper">
+    <div class="sf-chat__header">
+        <div class="sf-chat__header-title">
+            {{$ctrl.init.room}} <small ng-if="$ctrl.users.length"> ({{$ctrl.users.length}} online)</small>
+        </div>
+    </div>
+    <div class="sf-chat__container">
+        <div class="sf-chat__content">
+			<sf-chat-message ng-repeat="item in $ctrl.messages" avatar="$ctrl.showAvatar" message="item" block="$ctrl.checkBlock(item.senderId)"></sf-chat-message>
+        </div>
+    </div>
+    <div class="sf-chat__footer">
+        <sf-chat-form userdata="$ctrl.init" room="$ctrl.room" placeholder="{{$ctrl.placeholder}}"></sf-chat-form>
+    </div>
+    <div class="sf-chat__loading" ng-if="!$ctrl.chatReady">
+    	<small class="sf-chat__loading-text">ShelfiChat is loading...</small>
+    	<img class="sf-chat__loading-img" ng-src="{{$ctrl.loaderIcon}}">
+    </div>
+</div>
+<div class="sf-chat__credits">
+	<small>Powered by <a target="_blank" href="http://shelfi.net">ShelfiChat</a></small>
+</div>
+</div>
