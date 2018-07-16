@@ -1,58 +1,49 @@
 {
-  "name": "sfchat",
-  "version": "0.1.4",
-  "description": "A chat module from Shelfi",
+  "name": "webpack-4-quickstart",
+  "version": "1.0.0",
+  "description": "> Webpack 4 starter env",
   "main": "index.js",
   "scripts": {
-    "build": "./node_modules/.bin/webpack --config webpack.build.config.js",
-    "start": "./node_modules/.bin/webpack-dev-server --config webpack.dev.config.js --open"
+    "start": "webpack-dev-server --mode development --port 3000 --host 0.0.0.0",
+    "build": "webpack --mode production"
   },
-  "author": "Mehmet Arin <mehmet.ali.arin@gmail.com> (https://offminded.com)",
-  "license": "ISC",
-  "dependencies": {
-    "@pusher/chatkit": "^0.7.16"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/offminded/start"
   },
-   "peerDependencies": {
-     "angular": "^1.6.5",
-     "@pusher/chatkit": "^0.7.16"
-   },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/valentinogagliardi/webpack-4-quickstart/issues"
+  },
+  "homepage": "https://github.com/valentinogagliardi/webpack-4-quickstart#readme",
   "devDependencies": {
-    "config": "^1.30.0",
-    "file-loader": "^1.1.11",
-    "ngtemplate-loader": "^2.0.1",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.4",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-react": "^6.24.1",
+    "css-loader": "^0.28.11",
+    "es6-object-assign": "^1.1.0",
+    "es6-promise": "^4.2.4",
+    "html-loader": "^0.5.5",
+    "html-webpack-plugin": "^3.2.0",
+    "mini-css-extract-plugin": "^0.2.0",
+    "node-sass": "^4.9.0",
+    "postcss-loader": "^2.1.5",
+    "react": "^16.3.0",
+    "react-dom": "^16.3.0",
+    "sass-loader": "^7.0.3",
+    "style-loader": "^0.21.0",
+    "uglifyjs-webpack-plugin": "^1.2.7",
     "url-loader": "^1.0.1",
-    "webpack-dev-server": "2.5.0",
-    "babel-core": "6.25.0",
-    "babel-loader": "7.0.0",
-    "babel-plugin-transform-runtime": "6.23.0",
-    "babel-polyfill": "6.23.0",
-    "babel-preset-latest": "6.24.1",
-    "babel-register": "6.24.1",
-    "babel-runtime": "6.23.0",
-    "css-loader": "0.28.4",
-    "extract-text-webpack-plugin": "3.0.0",
-    "html-webpack-plugin": "2.28.0",
-    "lodash": "4.17.4",
-    "ng-annotate-loader": "0.6.1",
-    "ng-loader": "^3.0.0",
-    "node-sass": "4.5.3",
-    "preprocess": "3.1.0",
-    "raw-loader": "0.5.1",
-    "sass-loader": "6.0.5",
-    "sass-resources-loader": "1.3.0",
-    "style-loader": "0.18.2",
-    "webpack": "3.4.1",
-    "webpack-file-preprocessor-plugin": "0.0.1"
+    "webpack": "^4.2.0",
+    "webpack-cli": "^2.0.12",
+    "webpack-dev-server": "^3.1.1"
   },
-  "babel": {
-    "plugins": [
-      "transform-runtime"
-    ],
-    "presets": [
-      "latest"
-    ]
-  },
-  "engines": {
-    "node": ">=8.5.0"
+  "dependencies": {
+    "@pusher/chatkit": "^0.7.16",
+    "axios": "^0.18.0",
+    "hyperapp": "^1.2.6"
   }
 }

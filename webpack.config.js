@@ -1,111 +1,98 @@
-'use strict';
+const webpack = require('webpack');
+const HtmlWebPackPlugin = require("html-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const autoprefixer = require('autoprefixer');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+//const argv.mode = process.env.NODE_ENV !== 'production';
 
-const ExtractTextPlugin             = require('extract-text-webpack-plugin');
-const HtmlWebpackPlugin             = require('html-webpack-plugin');
-const path                          = require('path');
-const preprocess                    = require('preprocess');
-const webpack                       = require('webpack');
-const WebpackFilePreprocessorPlugin = require('webpack-file-preprocessor-plugin');
-
-const CommonsChunkPlugin = webpack.optimize.CommonsChunkPlugin;
-const devtool            = 'source-map';
-const preprocessContext  = {
-  ts : Date.now()
-};
-
-const entry = {
-  index : [
-    'babel-polyfill',
-    path.resolve(__dirname, 'src/index.js')
-  ]
-};
-
-const output = {
-    filename: '[name].js',
-    path: __dirname + '/dist',
-    chunkFilename: '[id].[chunkhash].js'
-};
-
-const modules = {
-  rules : [
-    {
-      test : /src.*\.js$/,
-      use  : [
-        {
-          loader : 'ng-annotate-loader'
-        },
-        {
-          loader : 'babel-loader'
+module.exports = (env, argv) => {
+  console.log(argv.mode);
+  return {
+  entry: './src/index.js',
+    output: {
+      filename: 'sfchat.min.js',
+      path: __dirname + '/dist'
+    },
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: {
+          loader: "babel-loader"
         }
-      ]
-    },
-    {
-      test: /.html$/,
-      loader: 'ngtemplate-loader?relativeTo=' + __dirname +'/src!html-loader?root=' + __dirname + '/src'
-    },
-    {
-        test: /\.(png|jpg|mp3|svg)$/,
-        loader: 'url-loader'
-    },
-    {
-      test : /src.*\.(scss|sass)$/,
-      use  : ExtractTextPlugin.extract({
-        fallback : 'style-loader',
-        use      : [
+      },
+  	  {
+  	  test: /\.(sa|sc|c)ss$/,
+  	  use: [
+          //(argv.mode !== 'production') ? 'style-loader' : MiniCssExtractPlugin.loader, // creates style nodes from JS strings
+          (argv.mode !== 'production') ? 'style-loader' : 'style-loader', // creates style nodes from JS strings
+  		    {
+  		      loader: "css-loader" // translates CSS into CommonJS
+  		    },
+  		    {
+  		      loader: "sass-loader" // compiles Sass to CSS
+  		    },
           {
-            loader : 'css-loader'
-          },
+            loader: 'postcss-loader',
+            options: {
+              autoprefixer: {
+                  browsers: ["last 2 versions"]
+              },
+              plugins: () => [
+                  autoprefixer
+              ]
+            }
+          }
+  		  ]
+  		},
+      {
+          test: /\.(png|jpg|mp3|svg)$/,
+          loader: 'url-loader'
+      },
+      {
+        test: /\.html$/,
+        use: [
           {
-            loader : 'sass-loader'
-          },
+            loader: "html-loader",
+            options: { minimize: true }
+          }
         ]
-      })
-    }
-  ]
-};
-
-const plugins = [
-  new ExtractTextPlugin({
-    disable  : process.env.NODE_ENV !== 'production',
-    filename : '[name].[contenthash].css'
-  }),
-
-  /*
-  new HtmlWebpackPlugin({
-    hash     : true,
-    inject   : 'body',
-    template : './src/index.html'
-  }),
-  */
-
-  // Automatically move all modules defined outside of application directory to vendor bundle.
-  /*
-  new CommonsChunkPlugin({
-    minChunks : (module, count) => module.resource && module.resource.indexOf(path.resolve(__dirname, 'src')) === -1,
-    name      : 'vendor'
-  }),
-  */
-
-  new WebpackFilePreprocessorPlugin({
-    pattern : /index\.html$/,
-    process : (source) => preprocess.preprocess(source.toString(), preprocessContext)
-  })
-];
-
-const resolve = {
-  alias            : {
-    common : path.resolve(__dirname, 'src/common'),
-    pages  : path.resolve(__dirname, 'src/pages')
+      }
+    ]
   },
-  descriptionFiles : ['package.json'],
-  modules          : ['node_modules']
-};
-
-module.exports = {
-  devtool,
-  entry,
-  output,
-  module : modules, // Set to not conflict with module from module.exports,
-  plugins,
-  resolve
+  optimization: {
+    minimizer: [
+      new UglifyJsPlugin({
+        uglifyOptions: {
+          output: {
+            comments: false
+          }
+        }
+      })
+    ]
+  },
+  plugins: [
+    new HtmlWebPackPlugin({
+      template: "./src/index.html",
+      filename: "./index.html"
+    }),
+    new MiniCssExtractPlugin({
+      // Options similar to the same options in webpackOptions.output
+      // both options are optional
+      publicPath: './dist',
+      filename: argv.mode ? '[name].css' : '[name].[hash].css',
+      chunkFilename: argv.mode ? '[id].css' : '[id].[hash].css',
+    }),
+    new webpack.optimize.ModuleConcatenationPlugin()
+  ],
+  devServer: {
+    headers: {
+      'Access-Control-Allow-Origin': 'http://192.168.0.12:3000'
+    }
+  },
+  node: {
+    buffer: false
+  }
+  }
 };
