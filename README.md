@@ -1,6 +1,6 @@
 # SfChat Client module
 
-----
+
 ### What is this?
 
 > Shelfi chat is a simple chat module that enables real-time communication between client side chat widget and slack. By initializing the widget you can automatically create chat rooms and subscribe users to rooms.
@@ -11,7 +11,7 @@
 
 > Add sfchat js file to your source
 
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/shelfi/chat/0.0.1/dist/sfchat.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/shelfi/chat@v0.1.1/dist/sfchat.min.js"></script>
 
 >Add sfchat initializer in between **<body></body>** tags. Change details except "baseURL" for your widget and instance.
 
