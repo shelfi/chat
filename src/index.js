@@ -13,17 +13,6 @@ if (typeof Object.assign === 'undefined') {
   require('es6-object-assign').polyfill();
 }
 
-//document.write('<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>');
-
-
-//document.write('<script src="https://cdn.slaask.com/chat.js"></script>');
-
-if (document.body) var e = 2000;
-else var e = 2e3;
-setTimeout(function() {
-    //document.write('<script src="https://cdn.slaask.com/chat.js"></script>');
-}, e);
-
 import axios from 'axios';
 import './app.scss';
 import loaderIcon from './assets/loader.svg';
@@ -407,7 +396,6 @@ const MessageInput = ({ user, room, message }) => (
     }}
     onkeydown={e => {
       if (e.key === 'Enter' && e.shiftKey === false) {
-        //console.log(e)
         e.preventDefault()
         submitMessage(e)
         e.target.value = ''
