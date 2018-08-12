@@ -13,9 +13,15 @@
 
     <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/shelfi/chat@v0.2/dist/sfchat.min.js"></script>
 
->
-    Add sfchat initializer in between **<body></body>** tags. Change details for your instance ID and user+group details.
-    </script>
+> Add sfchat initializer in between *<body></body>* tags. Change details for your instance ID and user+group details.
+
+    _sfchat.init('v1:us1:09b469f9-8a04-45a6-8a19-fc9bdb37989a', 
+	    {
+		    user_id: 'hugobarker@gmail.com', 
+		    user_name: 'Hugo Barker', 
+		    group: 'lunapark'
+	    }
+    )
 
 
 
