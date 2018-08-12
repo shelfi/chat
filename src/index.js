@@ -1,6 +1,6 @@
 //https://github.com/hyperapp/hyperapp
 //https://glebbahmutov.com/blog/pure-programming-with-hyper-app/
-//essek
+
 import { h, app } from "hyperapp"
 import { ChatManager, TokenProvider } from '@pusher/chatkit';
 
@@ -13,6 +13,16 @@ if (typeof Object.assign === 'undefined') {
   require('es6-object-assign').polyfill();
 }
 
+//document.write('<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>');
+
+
+//document.write('<script src="https://cdn.slaask.com/chat.js"></script>');
+
+if (document.body) var e = 2000;
+else var e = 2e3;
+setTimeout(function() {
+    //document.write('<script src="https://cdn.slaask.com/chat.js"></script>');
+}, e);
 
 import axios from 'axios';
 import './app.scss';
@@ -23,55 +33,70 @@ import chatIcon from './assets/chat.svg';
 import closeIcon from './assets/close.svg';
 import popSound from './assets/pop.mp3';
 
-//const self = this;
-const init = window.__sfchat;
 const pop = new Audio(popSound);
-
-
-const tokenProvider = new TokenProvider({
-  url: init.baseURL + '/api/auth'
-})
-
-const chatManager = new ChatManager({
-  instanceLocator: init.instance,
-  userId: init.user_id,
-  tokenProvider
-})
-
-const getRoom = () => {
-  const room = {};
-  return axios.post(init.baseURL + '/api/init', {
-   user_id: init.user_id,
-   user_name: init.user_name,
-   group: init.group 
-  }).then( res => {
-    return res.data;
-  });
-  
+let defaultWidgetConfig = {
+  message_limit: 5
 }
 
-//first get room then connect
-getRoom().then(response => {
-  //console.log(response);
-  chatManager.connect().then(user => {
-    //console.log(user);
-    setUser(user)
-    user
-      .subscribeToRoom({
-        roomId: response.id,
-        hooks: { onNewMessage: addMessage, onUserCameOnline: collectUsers },
-        messageLimit: init.message_limit || 20
-      })
-      .then((res) => {
-        setTimeout(() => {
-          setRoom(res);
-        }, 0)
-        
-        //console.log(res);
-      })
-  })
-})
+//SFCHAT CREATE + INIT
+const sfchatApp = function() {
+  
+  this.chatManager = {};
 
+  this.init = function(instanceID, initData, widgetConfig){
+    if (!widgetConfig) widgetConfig = defaultWidgetConfig;
+    document.onreadystatechange = function () {
+        if (document.readyState === "complete") {
+
+            const tokenProvider = new TokenProvider({
+              url: 'https://shelfi.shop/api/auth'
+            })
+
+            _sfchat.chatManager = new ChatManager({
+              instanceLocator: instanceID,
+              userId: initData.user_id,
+              tokenProvider
+            })
+            _sfchat.auth(initData, widgetConfig);
+        }
+    }
+  }
+
+  this.getRoom = (initData) => {
+    return axios.post('https://shelfi.shop/api/init', {
+     user_id: initData.user_id,
+     user_name: initData.user_name,
+     group: initData.group 
+    }).then( res => {
+      return res.data;
+    });
+    
+  }
+
+  this.auth = function(initData, widgetConfig){
+    //first get room then connect
+    _sfchat.getRoom(initData).then(response => {
+      _sfchat.chatManager.connect().then(user => {
+        setUser(user)
+        user
+          .subscribeToRoom({
+            roomId: response.id,
+            hooks: { onNewMessage: addMessage, onUserCameOnline: collectUsers },
+            messageLimit: widgetConfig.message_limit
+          })
+          .then((res) => {
+            setTimeout(() => {
+              setRoom(res);
+            }, 0)
+            
+            //console.log(res);
+          })
+      })
+    })
+  }
+  
+}
+global._sfchat = new sfchatApp;
 
 // ---------------------------------------------
 // Application Code
@@ -132,7 +157,6 @@ const actions = {
     axios.get('https://api.microlink.io?url=' + message.attachment.link)
             .then(function(res){
               message.attachment_metadata = res.data.data
-              console.log(res.data.data)
               updateMessage(message);
         }).catch(err => {
           console.log(err);
@@ -159,7 +183,7 @@ const actions = {
     }
     
     //unfurl url
-    const url_regex = /([\w\-_]+(?:(?:\.|\s*\[dot\]\s*[A-Z\-_]+)+))([A-Z\-\.,@?^=%&amp;:/~\+#]*[A-Z\-\@?^=%&amp;/~\+#]){2,6}?/igm;
+    const url_regex = /(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$])/igm;
     if ( message.text.match(url_regex) ){
 
       //console.log(message.text.match(url_regex)[0]);
@@ -182,7 +206,7 @@ const actions = {
     }, 500)
 
     //play sound when message sender is not current user and a new message added
-    if (message.senderId !== user.id && messages.length > init.message_limit){
+    if (message.senderId !== user.id && messages.length > defaultWidgetConfig.message_limit){
       pop.play();
     }
 
@@ -203,7 +227,7 @@ const actions = {
         roomId: room.id
       });
 
-      axios.post(init.baseURL + '/api/post-to-slack', {
+      axios.post('https://shelfi.shop/api/post-to-slack', {
         text: value,
         attachment: {},
         roomId: room.id,
@@ -276,7 +300,7 @@ const actions = {
       fd.append('roomName', room.name);
     })
 
-    axios.post(init.baseURL + '/api/upload', fd, { headers: { 'Content-Type': 'multipart/form-data'}})
+    axios.post('https://shelfi.shop/api/upload', fd, { headers: { 'Content-Type': 'multipart/form-data'}})
       .then(function(){
         fileList = null;
         setUploadStatus(false);
@@ -432,7 +456,6 @@ const ChatLauncher = ({ status }) => (
     e.preventDefault() 
     toggleWidget(e)
   }}
-  //class={message.sender.id === user.id && "active-user"}
   >
     { status.active && <img class="sf-chat-launcher__close" src={closeIcon} alt="Close" /> }
     { !status.active && <img class="sf-chat-launcher__chat"  src={chatIcon} alt="Launch" /> }
@@ -461,7 +484,3 @@ function view(state, actions) {
       <ChatLauncher status={state.widgetStatus}></ChatLauncher>
       </div>
 }
-
-
-
-//app(state, actions, view, document.body)
