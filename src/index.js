@@ -1,5 +1,6 @@
 //https://github.com/hyperapp/hyperapp
 //https://glebbahmutov.com/blog/pure-programming-with-hyper-app/
+//https://zaceno.github.io/hypercraft/post/initialization/
 
 import { h, app } from "hyperapp"
 import { ChatManager, TokenProvider } from '@pusher/chatkit';
@@ -22,70 +23,16 @@ import chatIcon from './assets/chat.svg';
 import closeIcon from './assets/close.svg';
 import popSound from './assets/pop.mp3';
 
+
+
+document.body.insertAdjacentHTML("beforeend", '<div class="sf-chat-instance" id="sf-chat-instance"></div>');
+let container = document.querySelector('#sf-chat-instance');
 const pop = new Audio(popSound);
+
 let defaultWidgetConfig = {
   message_limit: 5
 }
 
-//SFCHAT CREATE + INIT
-const sfchatApp = function() {
-  
-  this.chatManager = {};
-
-  this.init = function(instanceID, initData, widgetConfig){
-    if (!widgetConfig) widgetConfig = defaultWidgetConfig;
-    document.onreadystatechange = function () {
-        if (document.readyState === "complete") {
-
-            const tokenProvider = new TokenProvider({
-              url: 'https://shelfi.shop/api/auth'
-            })
-
-            _sfchat.chatManager = new ChatManager({
-              instanceLocator: instanceID,
-              userId: initData.user_id,
-              tokenProvider
-            })
-            _sfchat.auth(initData, widgetConfig);
-        }
-    }
-  }
-
-  this.getRoom = (initData) => {
-    return axios.post('https://shelfi.shop/api/init', {
-     user_id: initData.user_id,
-     user_name: initData.user_name,
-     group: initData.group 
-    }).then( res => {
-      return res.data;
-    });
-    
-  }
-
-  this.auth = function(initData, widgetConfig){
-    //first get room then connect
-    _sfchat.getRoom(initData).then(response => {
-      _sfchat.chatManager.connect().then(user => {
-        setUser(user)
-        user
-          .subscribeToRoom({
-            roomId: response.id,
-            hooks: { onNewMessage: addMessage, onUserCameOnline: collectUsers },
-            messageLimit: widgetConfig.message_limit
-          })
-          .then((res) => {
-            setTimeout(() => {
-              setRoom(res);
-            }, 0)
-            
-            //console.log(res);
-          })
-      })
-    })
-  }
-  
-}
-global._sfchat = new sfchatApp;
 
 // ---------------------------------------------
 // Application Code
@@ -314,10 +261,8 @@ const { addMessage, updateMessage, setUser, setRoom, setMessage, submitMessage, 
   state,
   actions,
   view,
-  document.body
+  container
 )
-
-
 
 
 // ---------------------------------------------
@@ -335,7 +280,7 @@ const ChatHeader = ({ user, room, message, status }) => (
 const MessageList = ({ user, messages, room }) => (
   <div class="sf-chat__body" 
   onupdate={e => { e.scrollTop = e.scrollHeight; }} 
-  oncreate={e => { e.scrollTop = e.scrollHeight; }} 
+  oncreate={e => { e.scrollTop = e.scrollHeight; room.loading = false; }} 
   ondragover={e => { e.preventDefault(); e.stopPropagation(); }} 
   ondrop={e => { e.preventDefault(); console.log(e); upload(e.dataTransfer.files); }}>
     {room.loading && 
@@ -472,3 +417,85 @@ function view(state, actions) {
       <ChatLauncher status={state.widgetStatus}></ChatLauncher>
       </div>
 }
+
+
+
+//SFCHAT CREATE + INIT
+const sfchatApp = function() {
+  
+  this.chatManager = {};
+
+  //TODO - fix state reset issues (router?)
+  this.create = function(){
+    document.body.insertAdjacentHTML("beforeend", '<div class="sf-chat-instance" id="sf-chat-instance"></div>');
+    container = document.querySelector('#sf-chat-instance');
+    app(
+      state,
+      actions,
+      view,
+      container
+    )
+  }
+
+  this.init = function(instanceID, initData, widgetConfig){
+    if (!widgetConfig) widgetConfig = defaultWidgetConfig;
+    document.onreadystatechange = function () {
+        if (document.readyState === "complete") {
+            const tokenProvider = new TokenProvider({
+              url: 'https://shelfi.shop/api/auth'
+            })
+
+            _sfchat.chatManager = new ChatManager({
+              instanceLocator: instanceID,
+              userId: initData.user_id,
+              tokenProvider
+            })
+            _sfchat.auth(initData, widgetConfig);
+        }
+    }
+  }
+
+  this.destroy = function(){
+    const el = document.getElementById('sf-chat-instance');
+    el.remove();
+  }
+
+  this.toggle = function(){
+    toggleWidget()
+  }
+
+  this.getRoom = (initData) => {
+    return axios.post('https://shelfi.shop/api/init', {
+     user_id: initData.user_id,
+     user_name: initData.user_name,
+     group: initData.group 
+    }).then( res => {
+      return res.data;
+    });
+    
+  }
+
+  this.auth = function(initData, widgetConfig){
+    //first get room then connect
+    _sfchat.getRoom(initData).then(response => {
+      _sfchat.chatManager.connect().then(user => {
+        setUser(user)
+        user
+          .subscribeToRoom({
+            roomId: response.id,
+            hooks: { onNewMessage: addMessage, onUserCameOnline: collectUsers },
+            messageLimit: widgetConfig.message_limit
+          })
+          .then((res) => {
+            setTimeout(() => {
+              setRoom(res);
+            }, 0)
+            
+            //console.log(res);
+          })
+      })
+    })
+  }
+  
+}
+global._sfchat = new sfchatApp;
