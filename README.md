@@ -11,7 +11,7 @@
 
 > Add sfchat js file to your source
 
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/shelfi/chat@v0.2/dist/sfchat.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/shelfi/chat@v0.2.1/dist/sfchat.min.js"></script>
 
 > Add sfchat initializer in between **<body></body>** tags. Change details for your instance ID and user+group details.
 
