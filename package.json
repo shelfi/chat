@@ -44,6 +44,7 @@
   "dependencies": {
     "@pusher/chatkit": "^0.7.16",
     "axios": "^0.18.0",
-    "hyperapp": "^1.2.6"
+    "hyperapp": "^1.2.6",
+    "store": "^2.0.12"
   }
 }
