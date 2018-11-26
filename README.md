@@ -36,6 +36,9 @@ Add sfchat initializer tag in a **<script>** tag (preferably after header). Chan
     )
 
 
+Note: Init data is optional. You can init a widget without any user data ie: _sfchat.init('YOUR_WIDGET_ID'). In this case the a visitor chat widget session would be an anonymous one until she sends data using the default user info form.
+
+
 Also you can use the second init json object to configure your widget. Normally the configuration is initialized during init phase (you can modify these values via your admin panels widget configuation section). You can override these settings at client level using the second json object, as in example:
 
     _sfchat.init('YOUR_WIDGET_ID', 
@@ -83,7 +86,16 @@ Also you can use the second init json object to configure your widget. Normally 
     )
 
 ----
-You can use the following events
+You can use the following methods
+	_sfchat.init('WIDGET_ID')
+	_sfchat.open()
+	_sfchat.close()
+	_sfchat.toggle()
+	_sfchat.destroy()
+
+
+----
+Additionally you can use the following events
 
 * sfchat.ready
 * sfchat.open 
@@ -108,5 +120,8 @@ You can use the following events
 Shelfichat is part of Shelfi E-commerce platform. For details see [Shelfi E-commerce](http://shelfi.net)
 
 ### changelog
+* 26-Nov-2018 add fix for copy paste text issue 0.9.2
+* 21-Nov-2018 Major Update including various features for version 0.9.0
+* 15-Aug-2018 various improvements 0.2.2
 * 12-Aug-2018 update for better init 0.1.2
-* 25-Jun-2018 release beta version 0.1.1
+* 25-Jun-2018 initial release for beta version 0.1.1
